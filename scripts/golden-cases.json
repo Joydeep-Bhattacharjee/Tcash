@@ -1,0 +1,160 @@
+[
+  {
+    "name": "wrong_transfer_consistent",
+    "request": {
+      "ticket_id": "TCK-1001",
+      "complaint": "I sent 5000 taka to a wrong number 01711223344 by mistake around 2pm today. Please help.",
+      "channel": "app",
+      "language": "en",
+      "user_type": "customer",
+      "transaction_history": [
+        { "transaction_id": "TXN-9101", "type": "transfer", "amount": 5000, "currency": "BDT", "counterparty": "01711223344", "status": "completed", "timestamp": "2026-06-26T14:02:00Z" },
+        { "transaction_id": "TXN-9099", "type": "payment", "amount": 250, "currency": "BDT", "counterparty": "Merchant Shop", "status": "completed", "timestamp": "2026-06-26T09:10:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-9101",
+      "evidence_verdict": "consistent",
+      "case_type": "wrong_transfer",
+      "department": "dispute_resolution"
+    }
+  },
+  {
+    "name": "payment_failed_inconsistent",
+    "request": {
+      "ticket_id": "TCK-1002",
+      "complaint": "My payment of 1200 tk failed but the balance was deducted. Money gone.",
+      "transaction_history": [
+        { "transaction_id": "TXN-7001", "type": "payment", "amount": 1200, "currency": "BDT", "counterparty": "GrocerMart", "status": "completed", "timestamp": "2026-06-25T18:00:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-7001",
+      "evidence_verdict": "inconsistent",
+      "case_type": "payment_failed",
+      "department": "payments_ops"
+    }
+  },
+  {
+    "name": "payment_failed_consistent",
+    "request": {
+      "ticket_id": "TCK-1003",
+      "complaint": "Payment of 800 taka failed and money was deducted from my account.",
+      "transaction_history": [
+        { "transaction_id": "TXN-7050", "type": "payment", "amount": 800, "currency": "BDT", "counterparty": "BillPay", "status": "failed", "timestamp": "2026-06-25T12:00:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-7050",
+      "evidence_verdict": "consistent",
+      "case_type": "payment_failed",
+      "department": "payments_ops"
+    }
+  },
+  {
+    "name": "duplicate_payment",
+    "request": {
+      "ticket_id": "TCK-1004",
+      "complaint": "I was charged twice 450 tk for the same purchase, duplicate charge.",
+      "transaction_history": [
+        { "transaction_id": "TXN-6001", "type": "payment", "amount": 450, "currency": "BDT", "counterparty": "CoffeeHouse", "status": "completed", "timestamp": "2026-06-24T08:00:00Z" },
+        { "transaction_id": "TXN-6002", "type": "payment", "amount": 450, "currency": "BDT", "counterparty": "CoffeeHouse", "status": "completed", "timestamp": "2026-06-24T08:01:00Z" }
+      ]
+    },
+    "expect": {
+      "evidence_verdict": "consistent",
+      "case_type": "duplicate_payment",
+      "department": "payments_ops"
+    }
+  },
+  {
+    "name": "merchant_settlement_delay",
+    "request": {
+      "ticket_id": "TCK-1005",
+      "complaint": "I am a merchant and have not received my settlement of 30000 BDT yet.",
+      "user_type": "merchant",
+      "transaction_history": [
+        { "transaction_id": "TXN-5001", "type": "settlement", "amount": 30000, "currency": "BDT", "counterparty": "Settlement Batch", "status": "pending", "timestamp": "2026-06-23T00:00:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-5001",
+      "case_type": "merchant_settlement_delay",
+      "department": "merchant_operations"
+    }
+  },
+  {
+    "name": "agent_cash_in_issue",
+    "request": {
+      "ticket_id": "TCK-1006",
+      "complaint": "Agent did cash in 2000 taka but it is not reflected in my balance.",
+      "transaction_history": [
+        { "transaction_id": "TXN-4001", "type": "cash_in", "amount": 2000, "currency": "BDT", "counterparty": "Agent-559", "status": "pending", "timestamp": "2026-06-26T10:00:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-4001",
+      "case_type": "agent_cash_in_issue",
+      "department": "agent_operations"
+    }
+  },
+  {
+    "name": "phishing",
+    "request": {
+      "ticket_id": "TCK-1007",
+      "complaint": "I got a suspicious call asking me to share my PIN and OTP to verify my account.",
+      "transaction_history": []
+    },
+    "expect": {
+      "relevant_transaction_id": null,
+      "evidence_verdict": "insufficient_data",
+      "case_type": "phishing_or_social_engineering",
+      "department": "fraud_risk"
+    }
+  },
+  {
+    "name": "refund_request",
+    "request": {
+      "ticket_id": "TCK-1008",
+      "complaint": "I want my money back, please refund 600 taka for the cancelled order.",
+      "transaction_history": [
+        { "transaction_id": "TXN-3001", "type": "payment", "amount": 600, "currency": "BDT", "counterparty": "OnlineStore", "status": "completed", "timestamp": "2026-06-22T15:00:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-3001",
+      "case_type": "refund_request"
+    }
+  },
+  {
+    "name": "insufficient_empty_history",
+    "request": {
+      "ticket_id": "TCK-1009",
+      "complaint": "Something is wrong with my account, please check.",
+      "transaction_history": []
+    },
+    "expect": {
+      "relevant_transaction_id": null,
+      "evidence_verdict": "insufficient_data",
+      "case_type": "other",
+      "department": "customer_support"
+    }
+  },
+  {
+    "name": "banglish_wrong_transfer",
+    "request": {
+      "ticket_id": "TCK-1010",
+      "complaint": "vul number e 3000 taka pathai disi, ferot chai please.",
+      "language": "bn",
+      "transaction_history": [
+        { "transaction_id": "TXN-2001", "type": "transfer", "amount": 3000, "currency": "BDT", "counterparty": "01911002200", "status": "completed", "timestamp": "2026-06-26T11:30:00Z" }
+      ]
+    },
+    "expect": {
+      "relevant_transaction_id": "TXN-2001",
+      "evidence_verdict": "consistent",
+      "case_type": "wrong_transfer",
+      "department": "dispute_resolution"
+    }
+  }
+]

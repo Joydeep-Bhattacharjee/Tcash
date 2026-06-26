@@ -1,0 +1,61 @@
+{
+  "ticket_id": "TCK-1001",
+  "relevant_transaction_id": "TXN-9101",
+  "evidence_verdict": "consistent",
+  "case_type": "wrong_transfer",
+  "department": "dispute_resolution",
+  "severity": "critical",
+  "human_review_required": true,
+  "agent_summary": "Case classified as transfer to a wrong/unknown recipient (wrong_transfer). Evidence verdict: consistent — the transaction data supports the customer's account (matched transaction TXN-9101). Routed to dispute_resolution at critical severity. Human review required.",
+  "recommended_next_action": "Verify the recipient details against the ledger and open a dispute_resolution case; do not promise reversal until eligibility is confirmed.",
+  "customer_reply": "Thank you for reaching out. We have received your report and a support specialist is reviewing it. We are reviewing the transfer you reported against our records. Any eligible amount will be handled through official channels once verification is complete. You can follow up anytime through our official support channel.",
+  "confidence": 0.92,
+  "reason_codes": [
+    "wrong_transfer",
+    "high_value",
+    "transaction_match",
+    "consistent"
+  ],
+  "evidence_trace": {
+    "extracted_signals": {
+      "amounts": [
+        5000,
+        1711223344
+      ],
+      "counterparty_hints": [
+        "01711223344"
+      ],
+      "type_intents": [
+        "transfer"
+      ],
+      "status_claims": [],
+      "time_refs": [
+        "2pm",
+        "today"
+      ]
+    },
+    "candidate_scores": [
+      {
+        "transaction_id": "TXN-9101",
+        "score": 10,
+        "reasons": [
+          "amount match 5000",
+          "counterparty fragment 01711223344",
+          "type intent transfer"
+        ]
+      },
+      {
+        "transaction_id": "TXN-9099",
+        "score": 0,
+        "reasons": []
+      }
+    ],
+    "threshold": 3,
+    "match_reason": "picked TXN-9101 (score 10): amount match 5000, counterparty fragment 01711223344, type intent transfer",
+    "verdict_reason": "matched transaction status/details support the claim",
+    "normalized_tokens": [
+      "money",
+      "wrong_recipient"
+    ]
+  }
+}

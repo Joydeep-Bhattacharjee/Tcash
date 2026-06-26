@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QueueStorm Investigator — Agent Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // shadcn "new-york" inspired theme — slate base, bKash-pink primary.
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+            colors: {
+              brand: {
+                DEFAULT: "#e2136e",
+                fg: "#ffffff",
+                50: "#fdf2f8",
+                100: "#fce7f3",
+                600: "#e2136e",
+                700: "#be1260",
+              },
+            },
+            boxShadow: {
+              card: "0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)",
+              pop: "0 10px 30px -10px rgb(15 23 42 / 0.20)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --bg: #f8fafc; /* slate-50 */
+        --card: #ffffff;
+        --border: #e2e8f0; /* slate-200 */
+        --muted: #64748b; /* slate-500 */
+        --fg: #0f172a; /* slate-900 */
+      }
+      body {
+        background:
+          radial-gradient(1200px 400px at 100% -10%, #fce7f322, transparent),
+          var(--bg);
+      }
+      .mono { font-family: "JetBrains Mono", monospace; }
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+      .fade-in { animation: fade 0.25s ease both; }
+      @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+      [data-icon] { width: 1em; height: 1em; }
+    </style>
+  </head>
+  <body class="font-sans text-slate-900 antialiased min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <div class="max-w-[1500px] mx-auto px-5 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-brand grid place-items-center text-white shadow-card">
+            <i data-lucide="search-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-[15px] font-bold leading-tight">QueueStorm Investigator</h1>
+            <p class="text-xs text-slate-500 leading-tight">Digital-finance complaint investigator — evidence first</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span id="healthDot" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2.5 py-1 text-slate-600">
+            <span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span> checking…
+          </span>
+          <a href="https://github.com" class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2.5 py-1 text-slate-600 hover:bg-slate-50">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> docs
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-[1500px] mx-auto px-5 py-5 grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- LEFT: input -->
+      <section class="lg:col-span-4 rounded-2xl border border-slate-200 bg-white shadow-card">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <i data-lucide="ticket" class="w-4 h-4 text-slate-500"></i>
+          <h2 class="text-sm font-semibold">Ticket input</h2>
+        </div>
+        <div class="p-5 space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Sample case</label>
+            <select id="sample" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30"></select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Complaint</label>
+            <textarea id="complaint" rows="3" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30" placeholder="I sent 5000 taka to a wrong number…"></textarea>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-xs font-medium text-slate-500 mb-1">channel</label>
+              <select id="channel" class="w-full rounded-lg border border-slate-200 px-2 py-2 text-sm"><option>app</option><option>web</option><option>ussd</option><option>call_center</option></select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 mb-1">language</label>
+              <select id="language" class="w-full rounded-lg border border-slate-200 px-2 py-2 text-sm"><option>en</option><option>bn</option><option>banglish</option></select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 mb-1">user_type</label>
+              <select id="user_type" class="w-full rounded-lg border border-slate-200 px-2 py-2 text-sm"><option>customer</option><option>merchant</option><option>agent</option></select>
+            </div>
+          </div>
+
+          <div>
+            <label class="flex items-center justify-between text-xs font-medium text-slate-500 mb-1">
+              <span>transaction_history (JSON)</span>
+              <span class="mono text-[10px] text-slate-400">2–5 rows</span>
+            </label>
+            <textarea id="history" rows="9" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs mono bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand/30">[]</textarea>
+          </div>
+
+          <button id="go" class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-brand hover:bg-brand-700 text-white text-sm font-semibold py-2.5 shadow-card transition active:scale-[.99]">
+            <i data-lucide="scan-search" class="w-4 h-4"></i> Investigate
+          </button>
+          <p id="err" class="text-rose-600 text-xs"></p>
+        </div>
+      </section>
+
+      <!-- CENTER: verdict -->
+      <section class="lg:col-span-4 rounded-2xl border border-slate-200 bg-white shadow-card">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <i data-lucide="gavel" class="w-4 h-4 text-slate-500"></i>
+          <h2 class="text-sm font-semibold">Verdict</h2>
+        </div>
+        <div class="p-5 space-y-4">
+          <div id="reviewBanner" class="hidden items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-amber-800 text-sm font-medium">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i> Human review required
+          </div>
+
+          <div id="verdictHero" class="rounded-xl border border-slate-200 p-4 grid place-items-center text-center text-slate-400">
+            <i data-lucide="search" class="w-7 h-7 mb-1"></i>
+            <p class="text-sm">Run an investigation to see the verdict.</p>
+          </div>
+
+          <div id="tags" class="hidden flex-wrap gap-2"></div>
+
+          <div id="traceWrap" class="hidden">
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-600 mb-2">
+              <i data-lucide="git-branch" class="w-3.5 h-3.5"></i> Evidence trace
+            </div>
+            <p id="reasonLine" class="text-xs text-slate-600 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 mb-3 mono"></p>
+            <div id="txnList" class="space-y-2"></div>
+            <details class="mt-3 text-xs text-slate-500">
+              <summary class="cursor-pointer select-none hover:text-slate-700">raw evidence_trace</summary>
+              <pre id="rawTrace" class="mono bg-slate-900 text-slate-100 p-3 rounded-lg overflow-auto max-h-56 mt-2 text-[11px]"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: drafts -->
+      <section class="lg:col-span-4 rounded-2xl border border-slate-200 bg-white shadow-card">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="file-pen-line" class="w-4 h-4 text-slate-500"></i>
+            <h2 class="text-sm font-semibold">Drafts</h2>
+          </div>
+          <span id="safeTick" class="hidden items-center gap-1 text-xs font-medium text-emerald-600">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> safety-checked
+          </span>
+        </div>
+        <div id="draftsBody" class="p-5 space-y-4">
+          <div class="text-slate-400 text-sm grid place-items-center py-10 text-center">
+            <i data-lucide="inbox" class="w-7 h-7 mb-1"></i>
+            Drafts appear here after investigation.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="max-w-[1500px] mx-auto px-5 pb-8 pt-2 text-xs text-slate-400">
+      Deterministic engine · no LLM required · stateless · synthetic data only — no real financial action is taken.
+    </footer>
+
+    <script>
+      const SAMPLES = [
+        { name: "Wrong transfer (consistent)", complaint: "I sent 5000 taka to a wrong number 01711223344 by mistake around 2pm today. Please help.", channel: "app", language: "en", user_type: "customer",
+          transaction_history: [
+            { transaction_id: "TXN-9101", type: "transfer", amount: 5000, currency: "BDT", counterparty: "01711223344", status: "completed", timestamp: "2026-06-26T14:02:00Z" },
+            { transaction_id: "TXN-9099", type: "payment", amount: 250, currency: "BDT", counterparty: "Merchant Shop", status: "completed", timestamp: "2026-06-26T09:10:00Z" } ] },
+        { name: "Payment failed but deducted (inconsistent)", complaint: "My payment of 1200 tk failed but the balance was deducted. Money gone.", channel: "app", language: "en", user_type: "customer",
+          transaction_history: [ { transaction_id: "TXN-7001", type: "payment", amount: 1200, currency: "BDT", counterparty: "GrocerMart", status: "completed", timestamp: "2026-06-25T18:00:00Z" } ] },
+        { name: "Phishing / social engineering", complaint: "I got a suspicious call asking me to share my PIN and OTP to verify my account.", channel: "call_center", language: "en", user_type: "customer", transaction_history: [] },
+        { name: "Banglish wrong transfer", complaint: "vul number e 3000 taka pathai disi, ferot chai please.", channel: "app", language: "bn", user_type: "customer",
+          transaction_history: [ { transaction_id: "TXN-2001", type: "transfer", amount: 3000, currency: "BDT", counterparty: "01911002200", status: "completed", timestamp: "2026-06-26T11:30:00Z" } ] },
+        { name: "Merchant settlement delay", complaint: "I am a merchant and have not received my settlement of 30000 BDT yet.", channel: "web", language: "en", user_type: "merchant",
+          transaction_history: [ { transaction_id: "TXN-5001", type: "settlement", amount: 30000, currency: "BDT", counterparty: "Settlement Batch", status: "pending", timestamp: "2026-06-23T00:00:00Z" } ] },
+        { name: "Duplicate payment", complaint: "I was charged twice 450 tk for the same purchase, duplicate charge.", channel: "app", language: "en", user_type: "customer",
+          transaction_history: [
+            { transaction_id: "TXN-6001", type: "payment", amount: 450, currency: "BDT", counterparty: "CoffeeHouse", status: "completed", timestamp: "2026-06-24T08:00:00Z" },
+            { transaction_id: "TXN-6002", type: "payment", amount: 450, currency: "BDT", counterparty: "CoffeeHouse", status: "completed", timestamp: "2026-06-24T08:01:00Z" } ] },
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const icons = () => window.lucide && window.lucide.createIcons();
+
+      // populate samples
+      const sampleSel = $("sample");
+      SAMPLES.forEach((s, i) => { const o = document.createElement("option"); o.value = i; o.textContent = s.name; sampleSel.appendChild(o); });
+      sampleSel.addEventListener("change", () => {
+        const s = SAMPLES[sampleSel.value]; if (!s) return;
+        $("complaint").value = s.complaint; $("channel").value = s.channel;
+        $("language").value = s.language; $("user_type").value = s.user_type;
+        $("history").value = JSON.stringify(s.transaction_history, null, 2);
+      });
+      sampleSel.value = "0"; sampleSel.dispatchEvent(new Event("change"));
+
+      // health badge
+      fetch("/health").then((r) => r.json()).then((j) => {
+        const ok = j && j.status === "ok";
+        $("healthDot").innerHTML =
+          '<span class="h-1.5 w-1.5 rounded-full ' + (ok ? "bg-emerald-500" : "bg-rose-500") + '"></span> ' + (ok ? "healthy" : "down");
+      }).catch(() => {});
+
+      const VERDICT = {
+        consistent:        { cls: "bg-emerald-50 border-emerald-200 text-emerald-700", icon: "circle-check", label: "Consistent" },
+        inconsistent:      { cls: "bg-amber-50 border-amber-200 text-amber-700",       icon: "circle-alert", label: "Inconsistent" },
+        insufficient_data: { cls: "bg-slate-50 border-slate-200 text-slate-600",        icon: "circle-help",  label: "Insufficient data" },
+      };
+      const SEV = {
+        low:      "bg-slate-100 text-slate-600 border-slate-200",
+        medium:   "bg-yellow-50 text-yellow-700 border-yellow-200",
+        high:     "bg-orange-50 text-orange-700 border-orange-200",
+        critical: "bg-rose-50 text-rose-700 border-rose-200",
+      };
+
+      let drafts = {};
+
+      $("go").addEventListener("click", async () => {
+        $("err").textContent = "";
+        let history;
+        try {
+          history = JSON.parse($("history").value || "[]");
+          if (!Array.isArray(history)) throw new Error("must be a JSON array");
+        } catch (e) { $("err").textContent = "Invalid transaction_history JSON: " + e.message; return; }
+
+        const body = {
+          ticket_id: "TCK-" + Date.now(),
+          complaint: $("complaint").value,
+          channel: $("channel").value, language: $("language").value, user_type: $("user_type").value,
+          transaction_history: history,
+        };
+        const btn = $("go"); btn.disabled = true; btn.classList.add("opacity-70");
+        btn.innerHTML = '<i data-lucide="loader-circle" class="w-4 h-4 animate-spin"></i> Investigating…'; icons();
+        try {
+          const res = await fetch("/analyze-ticket", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+          const data = await res.json();
+          if (!res.ok) { $("err").textContent = (data.message || "Error") + " (HTTP " + res.status + ")"; return; }
+          render(data, history);
+        } catch (e) { $("err").textContent = "Request failed: " + e.message; }
+        finally { btn.disabled = false; btn.classList.remove("opacity-70"); btn.innerHTML = '<i data-lucide="scan-search" class="w-4 h-4"></i> Investigate'; icons(); }
+      });
+
+      function chip(text, cls) {
+        return '<span class="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium ' + cls + '">' + text + "</span>";
+      }
+
+      function render(d, history) {
+        const v = VERDICT[d.evidence_verdict] || VERDICT.insufficient_data;
+
+        // hero
+        $("verdictHero").className = "rounded-xl border p-4 flex items-center gap-3 fade-in " + v.cls;
+        $("verdictHero").innerHTML =
+          '<i data-lucide="' + v.icon + '" class="w-8 h-8"></i>' +
+          '<div class="text-left"><div class="text-base font-bold">' + v.label + "</div>" +
+          '<div class="text-xs opacity-80 mono">' + (d.relevant_transaction_id ? "matched " + d.relevant_transaction_id : "no transaction matched") + "</div></div>";
+
+        // tags
+        const tags = $("tags"); tags.classList.remove("hidden"); tags.classList.add("flex");
+        tags.innerHTML =
+          chip('<i data-lucide="folder" class="w-3 h-3"></i>' + d.case_type, "bg-indigo-50 border-indigo-200 text-indigo-700") +
+          chip('<i data-lucide="building-2" class="w-3 h-3"></i>' + d.department, "bg-teal-50 border-teal-200 text-teal-700") +
+          chip('<i data-lucide="signal" class="w-3 h-3"></i>' + d.severity, SEV[d.severity] || SEV.low) +
+          chip('<i data-lucide="percent" class="w-3 h-3"></i>' + d.confidence, "bg-slate-50 border-slate-200 text-slate-600");
+
+        $("reviewBanner").classList.toggle("hidden", !d.human_review_required);
+        $("reviewBanner").classList.toggle("flex", !!d.human_review_required);
+
+        // trace
+        $("traceWrap").classList.remove("hidden");
+        const t = d.evidence_trace || {};
+        $("reasonLine").textContent = (t.match_reason || "") + "  →  " + (t.verdict_reason || "");
+        $("rawTrace").textContent = JSON.stringify(t, null, 2);
+
+        const scoreById = {}; (t.candidate_scores || []).forEach((c) => (scoreById[c.transaction_id] = c));
+        const list = $("txnList"); list.innerHTML = "";
+        if (!history.length) list.innerHTML = '<p class="text-xs text-slate-400">No transaction history provided.</p>';
+        history.forEach((tx) => {
+          const id = tx.transaction_id || tx.id || tx.txn_id || null;
+          const matched = id && id === d.relevant_transaction_id;
+          const sc = scoreById[id];
+          const div = document.createElement("div");
+          div.className = "rounded-lg border px-3 py-2 text-xs fade-in " + (matched ? "border-brand bg-brand-50" : "border-slate-200 bg-white");
+          div.innerHTML =
+            '<div class="flex items-center justify-between"><span class="font-semibold mono">' + (id || "(no id)") +
+            (matched ? ' <span class="text-brand">◀ matched</span>' : "") + "</span>" +
+            (sc ? '<span class="text-slate-400 mono">score ' + sc.score + "</span>" : "") + "</div>" +
+            '<div class="text-slate-600 mt-0.5">' + (tx.type || "?") + " · " + (tx.amount ?? "?") + " " + (tx.currency || "") + " · " +
+            '<span class="' + (matched ? "text-brand-700" : "text-slate-500") + '">' + (tx.status || "?") + "</span></div>" +
+            (sc && sc.reasons && sc.reasons.length ? '<div class="text-slate-400 mt-0.5">' + sc.reasons.join(", ") + "</div>" : "");
+          list.appendChild(div);
+        });
+
+        // drafts
+        drafts = { agent_summary: d.agent_summary, recommended_next_action: d.recommended_next_action, customer_reply: d.customer_reply };
+        const card = (key, label, icon, accent) =>
+          '<div class="rounded-lg border border-slate-200 ' + (accent || "") + '">' +
+          '<div class="flex items-center justify-between px-3 py-2 border-b border-slate-100">' +
+          '<span class="flex items-center gap-1.5 text-xs font-medium text-slate-600"><i data-lucide="' + icon + '" class="w-3.5 h-3.5"></i>' + label + "</span>" +
+          '<button class="copy inline-flex items-center gap-1 text-xs text-brand hover:text-brand-700" data-k="' + key + '"><i data-lucide="copy" class="w-3 h-3"></i>copy</button></div>' +
+          '<p class="px-3 py-2 text-xs leading-relaxed text-slate-700 whitespace-pre-wrap">' + d[key] + "</p></div>";
+        $("draftsBody").innerHTML =
+          '<div class="space-y-3 fade-in">' +
+          card("agent_summary", "agent_summary", "clipboard-list", "") +
+          card("recommended_next_action", "recommended_next_action", "list-checks", "") +
+          card("customer_reply", "customer_reply", "message-square-text", "bg-emerald-50/40") +
+          "</div>";
+
+        const safe = $("safeTick"); safe.classList.remove("hidden"); safe.classList.add("flex");
+        icons();
+      }
+
+      document.addEventListener("click", (e) => {
+        const b = e.target.closest(".copy"); if (!b) return;
+        navigator.clipboard.writeText(drafts[b.dataset.k] || "");
+        const o = b.innerHTML; b.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i>copied'; icons();
+        setTimeout(() => { b.innerHTML = o; icons(); }, 1200);
+      });
+
+      icons();
+    </script>
+  </body>
+</html>
