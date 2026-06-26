@@ -1,0 +1,17 @@
+{
+  "ticket_id": "manual-test-01",
+  "customer_name": "Test User",
+  "customer_phone": "01711111111",
+  "complaint": "I accidentally sent 500 tk to 01722222222 instead of my brothers number.",
+  "transaction_history": [
+    {
+      "txn_id": "TXN12345",
+      "date": "2023-10-25T10:00:00Z",
+      "amount": 500,
+      "type": "send_money",
+      "status": "completed",
+      "sender_phone": "01711111111",
+      "receiver_phone": "01722222222"
+    }
+  ]
+}

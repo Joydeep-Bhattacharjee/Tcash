@@ -63,9 +63,11 @@ const SAFE_NEXT_ACTION =
   "Route to the appropriate team for verification against the ledger; do not confirm any financial outcome to the customer until eligibility is verified through official channels.";
 
 function stripThirdParty(text: string): string {
+  const globalURL = new RegExp(URL, "gi");
+  const globalPHONE = new RegExp(PHONE, "g");
   return text
-    .replace(URL, "our official support channel")
-    .replace(PHONE, "our official support channel");
+    .replace(globalURL, "our official support channel")
+    .replace(globalPHONE, "our official support channel");
 }
 
 function neutralizeInjection(text: string): string {
@@ -90,8 +92,9 @@ function sanitizeCustomerReply(text: string, v: string[]): string {
 
   if (!REFUND_SAFE.test(out) && REFUND_CONFIRM.test(out)) {
     v.push("critical:refund_confirmation:customer_reply");
+    const globalRefundConfirm = new RegExp(REFUND_CONFIRM, "gi");
     out = out.replace(
-      REFUND_CONFIRM,
+      globalRefundConfirm,
       "any eligible amount will be returned through official channels",
     );
   }
@@ -124,7 +127,8 @@ function sanitizeSummary(text: string, v: string[]): string {
   if (INJECTION.test(text)) v.push("prompt_injection_echo:agent_summary");
   // summary is internal; only strip injection + any leaked credential ask
   if (asksForCredential(out)) {
-    out = out.replace(CREDENTIAL_NOUN, "[redacted]");
+    const globalCredentialNoun = new RegExp(CREDENTIAL_NOUN, "gi");
+    out = out.replace(globalCredentialNoun, "[redacted]");
     v.push("credential_request:agent_summary");
   }
   return out.trim() || "Case reviewed; see structured fields for routing and verdict.";
