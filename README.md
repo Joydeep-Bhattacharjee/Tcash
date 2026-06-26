@@ -1,4 +1,4 @@
-# QueueStorm Investigator
+# TCash SuperCop
 
 AI/API SupportOps Copilot for Digital Finance — a **complaint investigator, not a
 classifier**. One customer ticket + 2–5 lines of that customer's transaction history
@@ -35,8 +35,8 @@ Dev mode (hot reload): `npm run dev`.
 Docker:
 
 ```bash
-docker build -t queuestorm-investigator .
-docker run -p 3000:3000 queuestorm-investigator
+docker build -t tcash-supercop .
+docker run -p 3000:3000 tcash-supercop
 ```
 
 ---
@@ -168,7 +168,7 @@ impossible to mark "lucky."
 
 **The scored service is fully deterministic — no LLM is required, and none is used
 on the default path.** This is deliberate: no API credits are provided and a 30s
-limit is enforced, so a service that *requires* an LLM is fragile. QueueStorm
+limit is enforced, so a service that *requires* an LLM is fragile. TCash SuperCop
 produces a complete, safe answer with **zero external calls**.
 
 - **Evidence engine, classifier, router, severity, escalation, and safety

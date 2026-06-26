@@ -10,10 +10,13 @@ import { analyzeTicket } from "./analyze.js";
 // file is missing the API still runs unaffected.
 const __dirname = dirname(fileURLToPath(import.meta.url));
 let CONSOLE_HTML = "";
+let MANUAL_HTML = "";
 try {
   CONSOLE_HTML = readFileSync(join(__dirname, "..", "public", "index.html"), "utf8");
+  MANUAL_HTML = readFileSync(join(__dirname, "..", "public", "manual.html"), "utf8");
 } catch {
-  CONSOLE_HTML = "<h1>QueueStorm Investigator</h1><p>API is up. POST /analyze-ticket.</p>";
+  CONSOLE_HTML = "<h1>TCash SuperCop</h1><p>API is up. POST /analyze-ticket.</p>";
+  MANUAL_HTML = "<h1>Manual</h1><p>Not found.</p>";
 }
 
 const PORT = Number(process.env.PORT ?? 3000);
@@ -37,6 +40,11 @@ app.setErrorHandler((err, _req, reply) => {
 // Agent Console at root (does not touch the scored API surface)
 app.get("/", async (_req, reply) => {
   reply.type("text/html").send(CONSOLE_HTML);
+});
+
+// Manual route
+app.get("/manual", async (_req, reply) => {
+  reply.type("text/html").send(MANUAL_HTML);
 });
 
 // M1 — health gate
@@ -81,7 +89,7 @@ app.post("/analyze-ticket", async (req, reply) => {
 
 app
   .listen({ port: PORT, host: HOST })
-  .then((addr) => app.log.info(`QueueStorm Investigator listening on ${addr}`))
+  .then((addr) => app.log.info(`TCash SuperCop listening on ${addr}`))
   .catch((err) => {
     app.log.error(err);
     process.exit(1);

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TCash Integration Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme: 'base', themeVariables: { primaryColor: '#fdf2f8', primaryTextColor: '#0f172a', primaryBorderColor: '#e2136e', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#ffffff' }});</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+            colors: {
+              brand: {
+                DEFAULT: "#e2136e",
+                fg: "#ffffff",
+                50: "#fdf2f8",
+                100: "#fce7f3",
+                600: "#e2136e",
+                700: "#be1260",
+              },
+            },
+            boxShadow: {
+              card: "0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --bg: #f8fafc;
+      }
+      body {
+        background: radial-gradient(1200px 400px at 100% -10%, #fce7f322, transparent), var(--bg);
+      }
+    </style>
+  </head>
+  <body class="font-sans text-slate-900 antialiased min-h-screen">
+    <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <div class="max-w-[800px] mx-auto px-5 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-brand grid place-items-center text-white shadow-card">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-[15px] font-bold leading-tight">TCash Integration Manual</h1>
+            <p class="text-xs text-slate-500 leading-tight">TCash SuperCop API</p>
+          </div>
+        </div>
+        <a href="/" class="text-sm text-brand hover:underline font-medium">← Back to Console</a>
+      </div>
+    </header>
+
+    <main class="max-w-[800px] mx-auto px-5 py-10 prose prose-slate prose-sm sm:prose-base prose-a:text-brand">
+      <div class="bg-white p-8 rounded-2xl shadow-card border border-slate-200">
+        <h2 class="text-xl font-bold text-slate-900 mb-4 border-b pb-2">১. বর্তমান অবস্থা বনাম আমাদের সলিউশন</h2>
+        <p class="mb-4 text-slate-700"><strong>বর্তমানে যা হয়:</strong> কাস্টমার অ্যাপ থেকে কমপ্লেইন করলে সেটি সরাসরি সাপোর্ট এজেন্টের ড্যাশবোর্ডে এসে জমা হয়। এজেন্টকে ম্যানুয়ালি কাস্টমারের কথা পড়তে হয়, অন্য একটি প্যানেলে গিয়ে ট্রানজ্যাকশন হিস্ট্রি মেলাতে হয়, তারপর সিদ্ধান্ত নিয়ে টাইপ করে রিপ্লাই দিতে হয়। এতে প্রচুর সময় নষ্ট হয় এবং ভুলের সম্ভাবনা থাকে।</p>
+        <p class="mb-8 text-slate-700"><strong>TCash SuperCop যুক্ত হওয়ার পর:</strong> কাস্টমারের কমপ্লেইন এজেন্টের কাছে যাওয়ার আগে আমাদের API-এর ভেতর দিয়ে ফিল্টার হয়ে যাবে। এজেন্ট যখন ড্যাশবোর্ড খুলবেন, তিনি শুধু কমপ্লেইনই দেখবেন না, বরং এআই (AI) এর তৈরি করা রেডিমেড অ্যানালাইসিস এবং সেফ রিপ্লাইও দেখতে পাবেন।</p>
+
+        <h2 class="text-xl font-bold text-slate-900 mb-4 border-b pb-2">২. টিক্যাশ কোথায় এবং কীভাবে কানেক্ট করবে? (Integration Flow)</h2>
+        <p class="mb-4 text-slate-700">টিক্যাশ মূলত তাদের <strong>Internal CRM (Customer Relationship Management)</strong> সিস্টেমের সাথে আমাদের API কানেক্ট করবে। নিচের ৪টি ধাপে এই কানেকশনটি কাজ করবে:</p>
+        <ul class="list-disc pl-5 mb-8 text-slate-700 space-y-2">
+          <li><strong>ধাপ ১: ডাটা কালেকশন (The Trigger)</strong><br/>কাস্টমার যখন টিক্যাশ অ্যাপের 'সাপোর্ট' অপশনে গিয়ে লিখবে "আমি ভুলে অন্য নাম্বারে টাকা পাঠিয়েছি", তখন টিক্যাশের নিজস্ব সার্ভার সেই কমপ্লেইনটি রিসিভ করবে।</li>
+          <li><strong>ধাপ ২: পেলোড তৈরি (Payload Generation)</strong><br/>টিক্যাশের সার্ভার তাদের মেইন ডাটাবেস থেকে ঐ কাস্টমারের সর্বশেষ ৫টি ট্রানজ্যাকশন হিস্ট্রি টেনে আনবে। এরপর কমপ্লেইন এবং হিস্ট্রি— এই দুটোকে মিলিয়ে একটি JSON প্যাকেট তৈরি করবে।</li>
+          <li><strong>ধাপ ৩: API কল (The Webhook)</strong><br/>টিক্যাশের সার্ভার সেই JSON প্যাকেটটি নিয়ে আমাদের সিস্টেমে একটি POST Request পাঠাবে: <code>https://sust01.covers.bd/analyze-ticket</code></li>
+          <li><strong>ধাপ ৪: সাপোর্ট ড্যাশবোর্ডে প্রদর্শন (Agent View)</strong><br/>আমাদের API ৩০ সেকেন্ডের মধ্যে অ্যানালাইসিস করে একটি স্ট্রাকচার্ড JSON রেসপন্স টিক্যাশের সার্ভারে ফেরত পাঠাবে। টিক্যাশের নিজস্ব সাপোর্ট ড্যাশবোর্ডে তখন নতুন কিছু ফিল্ড (AI Verdict, Routing, Priority, Draft Reply) যুক্ত হবে।</li>
+        </ul>
+
+        <h2 class="text-xl font-bold text-slate-900 mb-4 border-b pb-2">৩. আর্কিটেকচারাল ফ্লো (Workflow)</h2>
+        <div class="bg-slate-50 p-6 rounded-lg mb-8 border border-slate-200 overflow-x-auto shadow-inner flex justify-center">
+          <div class="mermaid">
+sequenceDiagram
+    participant Customer as TCash App
+    participant DB as TCash DB
+    participant API as TCash SuperCop
+    participant Agent as Agent Console
+
+    Customer->>DB: Fetch user's recent transactions
+    DB-->>Customer: Return Transaction JSON
+    Customer->>API: POST /analyze-ticket (Complaint + JSON History)
+    
+    Note over API: 1. Normalizes Language<br>2. Matches Transactions<br>3. Checks Safety Rules<br>4. Generates AI Prose
+    
+    API-->>Agent: Return Analysis & Safe Reply (JSON)
+          </div>
+        </div>
+
+        <h2 class="text-xl font-bold text-slate-900 mb-4 border-b pb-2">৪. টিক্যাশের লাভ কী? (Business Value)</h2>
+        <ol class="list-decimal pl-5 text-slate-700 space-y-2">
+          <li><strong>Auto-Routing:</strong> রিফান্ডের মেসেজ রিফান্ড টিমে, আর ফ্রডের মেসেজ ফ্রড টিমে অটোমেটিকভাবে চলে যাবে।</li>
+          <li><strong>Zero Safety Violations:</strong> এআই-এর সেফটি ফিল্টারের কারণে কোনো এজেন্ট ভুল করেও কাস্টমারকে "আপনার পিন দিন" বলতে পারবে না বা অথরিটি ছাড়া "টাকা ফেরত দিচ্ছি" বলতে পারবেবিধা পাবে না।</li>
+          <li><strong>Handle Massive Scale:</strong> ঈদ বা ক্যাশব্যাক ক্যাম্পেইনের সময় যখন ঘণ্টায় হাজার হাজার কমপ্লেইন আসবে, তখন এই API সাপোর্ট টিমকে কলাপ্স হওয়া থেকে বাঁচাবে।</li>
+        </ol>
+      </div>
+    </main>
+
+    <script>
+      window.lucide && window.lucide.createIcons();
+    </script>
+  </body>
+</html>
