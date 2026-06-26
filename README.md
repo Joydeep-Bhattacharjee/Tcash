@@ -6,7 +6,7 @@ in, one structured JSON verdict out: which transaction it's about, whether the d
 backs the claim, the case type, the routing department, urgency, and a customer-safe
 reply that never leaks credentials or promises a refund it can't authorize.
 
-Built for the **bKash presents SUST CSE Carnival 2026 — Codex Community Hackathon**.
+Built for the **TCash SuperCop presents SUST CSE Carnival 2026 — Codex Community Hackathon**.
 
 The judge only ever calls two endpoints — `GET /health` and `POST /analyze-ticket`
 — so the API *is* the product.
