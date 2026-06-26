@@ -17,7 +17,6 @@ Built in TCash SuperCop
 > 
 > - **`GET /health`** - Working readiness gate.
 > - **`POST /analyze-ticket`** - The primary API endpoint for investigating complaints.
-> - **GitHub Repository Access** - Repository access has been granted to the organizer: **GitHub Handle: `bipulhf`**
 > - **README Documentation** - Complete setup, run instructions, AI/model usage, safety logic, and limitations are fully documented below.
 > - **Data & Secrets Security** - Strictly no real secrets (e.g. API keys) or real customer/payment data are contained in this repository. All credentials/configurations are loadable dynamically via environment variables, and the engine runs with high-fidelity deterministic fallbacks if no keys are set.
 
